@@ -41,8 +41,32 @@ var game =
 
 				o.clear = function ()
 				{
-					let hwxy = game.get.hwxy (o);
-					game.canvas.context.clearRect (hwxy.x, hwxy.y, hwxy.w, hwxy.h);
+					for (let id in game.object)
+					{
+						let object = game.object[id];
+						if (game.get.inbox (o, object))
+						{
+							if (game.get.Y (o) > game.get.Y (object) || o.z > object.z)
+							{
+								object.draw ();
+								for (let i in game.object)
+								{
+									if (i != o.id)
+									{
+										let io = game.object[i];
+										if (game.get.inbox (object, io))
+										{
+											if (game.get.Y (object) < game.get.Y (io) || object.z < io.z)
+											{
+												io.draw ();console.log (object.io);
+											}
+										}
+									}
+								}
+								console.log (object.id);
+							}
+						}
+					}
 				}
 
 				o.draw = function ()
@@ -57,10 +81,9 @@ var game =
 					o.clear ();
 					o.x = x;
 					o.y = y;
-					game.draw ();
+					o.draw ();
 				}
 
-			o.draw ();
 			return o;
 		},
 
@@ -96,11 +119,7 @@ var game =
 				let n = 0;
 				while (j < layer.length - 1)
 				{
-					let o0 = layer[j];
-					let y0 = game.get.y (o0) + game.get.h (o0);
-					let o1 = layer[j + 1];
-					let y1 = game.get.y (o1) + game.get.h (o1);
-					if (y0 > y1)
+					if (game.get.Y (layer[j]) > game.get.Y (layer[j + 1]))
 					{
 						let temp = layer[j];
 						layer[j] = layer[j + 1]; 
@@ -149,7 +168,7 @@ var game =
 		{
 			let h = (o.h > 1) ? o.h : o.h * game.canvas.height;
 				h = (o.hk) ? o.hk * game.get.w (o) : h;
-			return h;
+			return h >> 0;
 		},
 
 		hwxy: function (o)
@@ -162,25 +181,38 @@ var game =
 			return hwxy;
 		},
 
+		inbox: function (A, B)
+		{
+			let a = game.get.hwxy (A);
+			let b = game.get.hwxy (B);
+			return ((Math.abs (a.x - b.x + 0.5 * (a.w - b.w)) <= 0.5 * Math.abs (a.w + b.w)) &&
+								(Math.abs (a.y - b.y + 0.5 * (a.h - b.h)) <= 0.5 * Math.abs (a.h + b.h)));
+		},
+
 		w: function (o)
 		{
 			let w = (o.w > 1) ? o.w : o.w * game.canvas.width;
 				w = (o.wk) ? o.wk * game.get.h (o) : w;
-			return w;
+			return w >> 0;
 		},
 
 		x: function (o)
 		{
 			let x = (o.x > 1) ? o.x : o.x * game.canvas.width;
 				x = (o.xk) ? x - o.xk * game.get.w (o) : x;
-			return x;
+			return x >> 0;
 		},
 
 		y: function (o)
 		{
 			let y = (o.y > 1) ? o.y : o.y * game.canvas.height;
 				y = (o.yk) ? y - o.yk * game.get.h (o) : y;
-			return y;
+			return y >> 0;
+		},
+
+		Y: function (o)
+		{
+			return game.get.y (o) + game.get.h (o);
 		}
 	},
 
@@ -190,33 +222,12 @@ var game =
 	{
 		game.canvas.load ();
 		game.event.load ();
+		game.scene.load ();
 
-		game.create.box
-		({
-			h: 0.5,
-			wk: 1,
-			x: 0.5, xk: 0.5,
-			y: 0.5, yk: 0.5
-		}).load ();
-
-		game.create.box
-		({
-			color: '#f00',
-			h: 0.4,
-			wk: 1,
-			x: 0.6, xk: 0.5,
-			y: 0.56, yk: 0.5
-		}). load ();
-
-		game.create.box
-		({
-			color: '#0f0',
-			h: 0.3,
-			wk: 1,
-			x: 0.7, xk: 0.5,
-			y: 0.56, yk: 0.5
-		}). load ();
+		game.draw ();
 	},
+
+	scene: { load: function () { game.scene.test (); } },
 
 	tick: 50,
 
@@ -224,3 +235,41 @@ var game =
 }
 
 window.onload = game.run;
+
+game.scene.test = function ()
+{
+	game.create.box
+	({
+		h: 0.5,
+		wk: 1,
+		x: 0.5, xk: 0.5,
+		y: 0.5, yk: 0.5
+	}).load ();
+
+	game.create.box
+	({
+		color: '#f00',
+		h: 0.4,
+		wk: 1,
+		x: 0.6, xk: 0.5,
+		y: 0.56, yk: 0.5
+	}). load ();
+
+	game.create.box
+	({
+		color: '#0f0',
+		h: 0.3,
+		wk: 1,
+		x: 0.4, xk: 0.5,
+		y: 0.56, yk: 0.5
+	}). load ();
+
+	game.create.box
+	({
+		color: '#00f',
+		h: 0.2,
+		wk: 1,
+		x: 0.35, xk: 0.5,
+		y: 0.65, yk: 0.5
+	}). load ();
+}

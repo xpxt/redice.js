@@ -58,7 +58,7 @@ var game =
 										{
 											if (game.get.Y (object) < game.get.Y (io) || object.z < io.z)
 											{
-												io.draw ();console.log (object.io);
+												io.draw ();
 											}
 										}
 									}
@@ -252,7 +252,7 @@ game.scene.test = function ()
 		h: 0.4,
 		wk: 1,
 		x: 0.6, xk: 0.5,
-		y: 0.56, yk: 0.5
+		y: 0.58, yk: 0.5
 	}). load ();
 
 	game.create.box
@@ -271,5 +271,14 @@ game.scene.test = function ()
 		wk: 1,
 		x: 0.35, xk: 0.5,
 		y: 0.65, yk: 0.5
+	}). load ();
+
+	game.create.box
+	({
+		color: '#0ff',
+		h: 0.15,
+		wk: 2,
+		x: 0.35, xk: 0.5,
+		y: 0.68, yk: 0.5
 	}). load ();
 }

@@ -200,14 +200,14 @@ var game =
 		{
 			let x = (o.x > 1) ? o.x : o.x * game.canvas.width;
 				x = (o.xk) ? x - o.xk * game.get.w (o) : x;
-			return x >> 0;
+			return x;
 		},
 
 		y: function (o)
 		{
 			let y = (o.y > 1) ? o.y : o.y * game.canvas.height;
 				y = (o.yk) ? y - o.yk * game.get.h (o) : y;
-			return y >> 0;
+			return y;
 		},
 
 		Y: function (o)
@@ -243,42 +243,22 @@ game.scene.test = function ()
 		h: 0.5,
 		wk: 1,
 		x: 0.5, xk: 0.5,
-		y: 0.5, yk: 0.5
+		y: 0.5, yk: 0.5,
+		z: 1
 	}).load ();
 
-	game.create.box
-	({
-		color: '#f00',
-		h: 0.4,
-		wk: 1,
-		x: 0.6, xk: 0.5,
-		y: 0.58, yk: 0.5
-	}). load ();
-
-	game.create.box
-	({
-		color: '#0f0',
-		h: 0.3,
-		wk: 1,
-		x: 0.4, xk: 0.5,
-		y: 0.56, yk: 0.5
-	}). load ();
-
-	game.create.box
-	({
-		color: '#00f',
-		h: 0.2,
-		wk: 1,
-		x: 0.35, xk: 0.5,
-		y: 0.65, yk: 0.5
-	}). load ();
-
-	game.create.box
-	({
-		color: '#0ff',
-		h: 0.15,
-		wk: 2,
-		x: 0.35, xk: 0.5,
-		y: 0.68, yk: 0.5
-	}). load ();
+	for (let i = 0; i < 10; i++)
+	{
+		for (let j = 0; j < 10; j++)
+		{
+			game.create.box
+			({
+				color: '#ccc',
+				h: 0.1,
+				w: 0.1,
+				x: i * 0.1,
+				y: j * 0.1
+			}).load ();
+		}
+	}
 }

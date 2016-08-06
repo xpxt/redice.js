@@ -39,11 +39,25 @@ var game =
 				o.color = _.color || '#000';
 				o.z = _.z || 0;
 
+				o.clear = function ()
+				{
+					let hwxy = game.get.hwxy (o);
+					game.canvas.context.clearRect (hwxy.x, hwxy.y, hwxy.w, hwxy.h);
+				}
+
 				o.draw = function ()
 				{
 					let hwxy = game.get.hwxy (o);
 					game.canvas.context.fillStyle = o.color;
 					game.canvas.context.fillRect (hwxy.x, hwxy.y, hwxy.w, hwxy.h);
+				}
+
+				o.move = function (x, y)
+				{
+					o.clear ();
+					o.x = x;
+					o.y = y;
+					game.draw ();
 				}
 
 			o.draw ();
@@ -89,7 +103,7 @@ var game =
 					if (y0 > y1)
 					{
 						let temp = layer[j];
-						layer[j] = layer[j + 1];
+						layer[j] = layer[j + 1]; 
 						layer[j + 1] = temp;
 						swaped = true;
 					}
@@ -191,6 +205,15 @@ var game =
 			h: 0.4,
 			wk: 1,
 			x: 0.6, xk: 0.5,
+			y: 0.56, yk: 0.5
+		}). load ();
+
+		game.create.box
+		({
+			color: '#0f0',
+			h: 0.3,
+			wk: 1,
+			x: 0.7, xk: 0.5,
 			y: 0.56, yk: 0.5
 		}). load ();
 	},

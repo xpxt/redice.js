@@ -76,12 +76,35 @@ var game =
 					game.canvas.context.fillRect (hwxy.x, hwxy.y, hwxy.w, hwxy.h);
 				}
 
+				o.mousemove = function (e)
+				{
+					if (o.moved)
+					o.move (e.x, e.y);
+				}
+
 				o.move = function (x, y)
 				{
 					o.clear ();
 					o.x = x;
 					o.y = y;
 					o.draw ();
+					o.zen (o);
+				}
+
+				o.zen = function (o)
+				{
+					for (let id in game.object)
+					{
+						let object = game.object[id];
+						if (game.get.inbox (o, object))
+						{
+							if ((game.get.Y (o) < game.get.Y (object) && o.z == object.z) || o.z < object.z)
+							{
+								object.draw ();
+								o.zen (object);
+							}
+						}
+					}
 				}
 
 			return o;
@@ -141,6 +164,7 @@ var game =
 		load: function ()
 		{
 			window.onmousedown = game.event.update;
+			window.onmousemove = game.event.update;
 			window.onmouseup = game.event.update;
 			game.event.tick = game.event.update;
 		},
@@ -240,10 +264,31 @@ game.scene.test = function ()
 {
 	game.create.box
 	({
-		h: 0.5,
+		h: 0.2,
+		moved: true,
 		wk: 1,
-		x: 0.5, xk: 0.5,
+		x: 0.55, xk: 0.5,
 		y: 0.5, yk: 0.5,
+		z: 1
+	}).load ();
+
+	game.create.box
+	({
+		color: '#f00',
+		h: 0.15,
+		wk: 1,
+		x: 0.6, xk: 0.5,
+		y: 0.6, yk: 0.5,
+		z: 1
+	}).load ();
+
+	game.create.box
+	({
+		color: '#f0f',
+		h: 0.15,
+		wk: 1,
+		x: 0.62, xk: 0.5,
+		y: 0.64, yk: 0.5,
 		z: 1
 	}).load ();
 

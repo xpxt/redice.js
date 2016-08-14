@@ -44,26 +44,15 @@ var game =
 					for (let id in game.object)
 					{
 						let object = game.object[id];
-						if (game.get.inbox (o, object))
+						if (id != o.id)
 						{
-							if (game.get.Y (o) > game.get.Y (object) || o.z > object.z)
+							if (game.get.inbox (o, object))
 							{
-								object.draw ();
-								for (let i in game.object)
+								if (o.z > object.z)
 								{
-									if (i != o.id)
-									{
-										let io = game.object[i];
-										if (game.get.inbox (object, io))
-										{
-											if (game.get.Y (object) < game.get.Y (io) || object.z < io.z)
-											{
-												io.draw ();
-											}
-										}
-									}
+									object.draw ();
+									o.zen (object);
 								}
-								console.log (object.id);
 							}
 						}
 					}
@@ -91,17 +80,17 @@ var game =
 					o.zen (o);
 				}
 
-				o.zen = function (o)
+				o.zen = function (O)
 				{
 					for (let id in game.object)
 					{
 						let object = game.object[id];
-						if (game.get.inbox (o, object))
+						if (game.get.inbox (O, object))
 						{
-							if ((game.get.Y (o) < game.get.Y (object) && o.z == object.z) || o.z < object.z)
+							if ((O.z < object.z) || ((game.get.Y (O) < game.get.Y (object) && O.z == object.z)))
 							{
-								object.draw ();
-								o.zen (object);
+									object.draw ();
+									O.zen (object);
 							}
 						}
 					}
@@ -289,6 +278,26 @@ game.scene.test = function ()
 		wk: 1,
 		x: 0.62, xk: 0.5,
 		y: 0.64, yk: 0.5,
+		z: 1
+	}).load ();
+
+	game.create.box
+	({
+		color: '#0ff',
+		h: 0.15,
+		wk: 1,
+		x: 0.64, xk: 0.5,
+		y: 0.66, yk: 0.5,
+		z: 1
+	}).load ();
+
+	game.create.box
+	({
+		color: '#fff',
+		h: 0.15,
+		wk: 1,
+		x: 0.66, xk: 0.5,
+		y: 0.68, yk: 0.5,
 		z: 1
 	}).load ();
 

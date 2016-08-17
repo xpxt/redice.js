@@ -43,13 +43,14 @@ var game =
 				{
 					for (let id in game.object)
 					{
-						let object = game.object[id];
-						if (id != o.id)
+						if (o.id != id)
 						{
-							if (game.get.inbox (o, object))
+							let object = game.object[id];
+							if (game.get.inring (o, object))
 							{
 								if (o.z > object.z)
 								{
+									back = true;
 									object.draw ();
 									o.zen (object);
 								}
@@ -67,30 +68,44 @@ var game =
 
 				o.mousemove = function (e)
 				{
-					if (o.moved)
-					o.move (e.x, e.y);
+					if (o.movable)
+					{
+						o.moved = true;
+						o.x = e.x;
+						o.y = e.y;
+					}
 				}
 
-				o.move = function (x, y)
+				o.move = function ()
 				{
 					o.clear ();
-					o.x = x;
-					o.y = y;
 					o.draw ();
 					o.zen (o);
+				}
+
+				o.tick = function ()
+				{
+					if (o.moved)
+					{
+						o.moved = false;
+						o.move ();
+					}
 				}
 
 				o.zen = function (O)
 				{
 					for (let id in game.object)
 					{
-						let object = game.object[id];
-						if (game.get.inbox (O, object))
+						if (O.id != id)
 						{
-							if ((O.z < object.z) || ((game.get.Y (O) < game.get.Y (object) && O.z == object.z)))
+							let object = game.object[id];
+							if (game.get.inbox (O, object))
 							{
+								if ((O.z < object.z) || ((game.get.Y (O) < game.get.Y (object) && O.z == object.z)))
+								{
 									object.draw ();
 									O.zen (object);
+								}
 							}
 						}
 					}
@@ -141,10 +156,14 @@ var game =
 					j++;
 				}
 
-				if (!swaped) break;
+				if (!swaped) { break; }
 			}
 
-			for (let o of layer) o.draw ();
+			for (let z in layer)
+			{
+				let o = layer[z];
+				o.draw ();
+			}
 		}
 	},
 
@@ -181,16 +200,16 @@ var game =
 		{
 			let h = (o.h > 1) ? o.h : o.h * game.canvas.height;
 				h = (o.hk) ? o.hk * game.get.w (o) : h;
-			return h >> 0;
+			return h;
 		},
 
 		hwxy: function (o)
 		{
 			let hwxy = {};
-				hwxy.h = game.get.h (o);
-				hwxy.w = game.get.w (o);
-				hwxy.x = game.get.x (o);
-				hwxy.y = game.get.y (o);
+				hwxy.h = game.get.h (o) >> 0;
+				hwxy.w = game.get.w (o) >> 0;
+				hwxy.x = game.get.x (o) >> 0;
+				hwxy.y = game.get.y (o) >> 0;
 			return hwxy;
 		},
 
@@ -202,11 +221,20 @@ var game =
 								(Math.abs (a.y - b.y + 0.5 * (a.h - b.h)) <= 0.5 * Math.abs (a.h + b.h)));
 		},
 
+		inring: function (A, B)
+		{
+			let a = game.get.hwxy (A);
+			let b = game.get.hwxy (B);
+			let r = Math.sqrt (Math.pow (a.x - b.x, 2) + Math.pow (a.y - b.y, 2));
+			let R = (a.h + a.w) / 1.3;
+			return (r < R);
+		},
+
 		w: function (o)
 		{
 			let w = (o.w > 1) ? o.w : o.w * game.canvas.width;
 				w = (o.wk) ? o.wk * game.get.h (o) : w;
-			return w >> 0;
+			return w;
 		},
 
 		x: function (o)
@@ -254,7 +282,7 @@ game.scene.test = function ()
 	game.create.box
 	({
 		h: 0.2,
-		moved: true,
+		movable: true,
 		wk: 1,
 		x: 0.55, xk: 0.5,
 		y: 0.5, yk: 0.5,

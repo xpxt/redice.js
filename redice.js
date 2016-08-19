@@ -121,6 +121,20 @@ var game =
 				o.id = o.id || o.class + Object.keys (game.object).length;
 				o.load = function () { game.object[o.id] = o; }
 			return o;
+		},
+
+		sprite: function (_)
+		{
+			let o = game.create.box (_);
+				o.i = _.i;
+
+				o.draw = function ()
+				{
+					let hwxy = game.get.hwxy (o);
+					game.canvas.context.drawImage (o.i, hwxy.x, hwxy.y, hwxy.w, hwxy.h);
+				}
+
+			return o;
 		}
 	},
 
@@ -206,11 +220,21 @@ var game =
 		hwxy: function (o)
 		{
 			let hwxy = {};
-				hwxy.h = game.get.h (o) >> 0;
-				hwxy.w = game.get.w (o) >> 0;
-				hwxy.x = game.get.x (o) >> 0;
-				hwxy.y = game.get.y (o) >> 0;
+				hwxy.h = game.get.h (o);
+				hwxy.w = game.get.w (o);
+				hwxy.x = game.get.x (o);
+				hwxy.y = game.get.y (o);
 			return hwxy;
+		},
+
+		set i (list)
+		{
+			for (let name of list)
+			{
+				let image = new Image ();
+					image.src = 'data/' + name + '.png';
+				game.i[name] = image;
+			}
 		},
 
 		inbox: function (A, B)
@@ -257,6 +281,8 @@ var game =
 		}
 	},
 
+	i: {},
+
 	object: {},
 
 	run: function ()
@@ -274,6 +300,8 @@ var game =
 
 	time: 0
 }
+
+game.get.i = [ 'grass' ];
 
 window.onload = game.run;
 
@@ -333,10 +361,10 @@ game.scene.test = function ()
 	{
 		for (let j = 0; j < 10; j++)
 		{
-			game.create.box
+			game.create.sprite
 			({
-				color: '#ccc',
 				h: 0.1,
+				i: game.i.grass,
 				w: 0.1,
 				x: i * 0.1,
 				y: j * 0.1

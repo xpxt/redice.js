@@ -52,7 +52,7 @@ var game =
 								{
 									back = true;
 									object.draw ();
-									o.zen (object);
+									o.zup (object);
 								}
 							}
 						}
@@ -105,6 +105,28 @@ var game =
 								{
 									object.draw ();
 									O.zen (object);
+								}
+							}
+						}
+					}
+				}
+
+				o.zup = function (O)
+				{
+					for (let id in game.object)
+					{
+						if (O.id != id)
+						{
+							let object = game.object[id];
+							if (!object.moved)
+							{
+								if (game.get.inbox (O, object))
+								{
+									if (O.z < object.z)
+									{
+										object.draw ();
+										O.zen (object);
+									}
 								}
 							}
 						}
@@ -254,6 +276,29 @@ var game =
 			return (r < R);
 		},
 
+		r: function (a, b, c)
+		{
+			let r = Math.random ();
+
+			if (b)
+			{
+				r = Math.random () * (b - a) + a;
+			}
+
+			if (c)
+			{
+				r = Math.floor (Math.random () * (b - a + 1)) + a;
+			}
+
+			if (Array.isArray (a))
+			{
+				let i = Math.floor (Math.random () * (a.length));
+				r = a[i];
+			}
+
+			return r;
+		},
+
 		w: function (o)
 		{
 			let w = (o.w > 1) ? o.w : o.w * game.canvas.width;
@@ -301,7 +346,7 @@ var game =
 	time: 0
 }
 
-game.get.i = [ 'grass' ];
+game.get.i = [ 'grass', 'grass2' ];
 
 window.onload = game.run;
 
@@ -309,7 +354,7 @@ game.scene.test = function ()
 {
 	game.create.box
 	({
-		h: 0.2,
+		h: 0.1,
 		movable: true,
 		wk: 1,
 		x: 0.55, xk: 0.5,
@@ -363,11 +408,11 @@ game.scene.test = function ()
 		{
 			game.create.sprite
 			({
-				h: 0.1,
-				i: game.i.grass,
-				w: 0.1,
-				x: i * 0.1,
-				y: j * 0.1
+				h: 50,
+				i: game.get.r ([ game.i.grass, game.i.grass2 ]),
+				w: 50,
+				x: 400 + j * 50,
+				y: 100 + i * 50
 			}).load ();
 		}
 	}

@@ -66,30 +66,13 @@ var game =
 					game.canvas.context.fillRect (hwxy.x, hwxy.y, hwxy.w, hwxy.h);
 				}
 
-				o.mousemove = function (e)
-				{
-					if (o.movable)
-					{
-						o.moved = true;
-						o.x = e.x;
-						o.y = e.y;
-					}
-				}
-
-				o.move = function ()
+				o.move = function (x, y)
 				{
 					o.clear ();
+					o.x = x;
+					o.y = y;
 					o.draw ();
 					o.zen (o);
-				}
-
-				o.tick = function ()
-				{
-					if (o.moved)
-					{
-						o.moved = false;
-						o.move ();
-					}
 				}
 
 				o.zen = function (O)
@@ -154,6 +137,58 @@ var game =
 				{
 					let hwxy = game.get.hwxy (o);
 					game.canvas.context.drawImage (o.i, hwxy.x, hwxy.y, hwxy.w, hwxy.h);
+				}
+
+			return o;
+		},
+
+		unit: function (_)
+		{
+			let o = game.create.object (_);
+				o.hp = _.hp || 1;
+				o.i = _.i;
+				o.manage = _.manage || '';
+				o.speed = _.speed || 0.01;
+				o.time = { walk: 0 };
+				o.vx = _.vx || o.x;
+				o.vy = _.vy || o.y;
+
+				o.draw = function ()
+				{
+					let hwxy = game.get.hwxy (o);
+					game.canvas.context.drawImage (o.i.head, hwxy.x, hwxy.y, hwxy.w, hwxy.h);
+				}
+
+				o.mousedown = function (e)
+				{
+					o.walkto (e)
+				}
+
+				o.tick = function ()
+				{
+					o.walk ();
+				}
+
+
+				o.walk = function ()
+				{
+					if (o.vr >= o.speed + 0.01)
+					{
+						let dot = game.get.rab (o.x, o.y, o.vx, o.vy, o.speed);
+						o.x = dot.x;
+						o.y = dot.y;
+						o.draw ();
+					}
+				}
+
+				o.walkto = function (e)
+				{
+					if (o.manage == 'mouse')
+					{
+						o.vx = e.x / game.canvas.width;
+						o.vy = e.y / game.canvas.height;
+						o.vr = game.get.ab (o.x, o.y, o.vx, o.vy);
+					}
 				}
 
 			return o;
@@ -232,6 +267,11 @@ var game =
 
 	get:
 	{
+		ab: function (x0, y0, x1, y1)
+		{
+			return Math.sqrt (Math.pow (x0 - x1, 2) + Math.pow (y0 - y1, 2));
+		},
+
 		h: function (o)
 		{
 			let h = (o.h > 1) ? o.h : o.h * game.canvas.height;
@@ -299,6 +339,15 @@ var game =
 			return r;
 		},
 
+		rab: function (x0, y0, x1, y1, r)
+		{
+			let tan = Math.tan ((y1 - y0) / (x1 - x0));
+			let angle = Math.atan (tan);
+			let x = x0 + r * Math.cos (angle);
+			let y = y0 + r * Math.sin (angle);
+			return { x: x, y: y };
+		},
+
 		w: function (o)
 		{
 			let w = (o.w > 1) ? o.w : o.w * game.canvas.width;
@@ -346,7 +395,7 @@ var game =
 	time: 0
 }
 
-game.get.i = [ 'grass', 'grass2' ];
+game.get.i = [ 'body', 'grass', 'grass2', 'head', 'stone' ];
 
 window.onload = game.run;
 
@@ -394,7 +443,7 @@ game.scene.test = function ()
 
 	game.create.box
 	({
-		color: '#fff',
+		color: '#ff0',
 		h: 0.15,
 		wk: 1,
 		x: 0.66, xk: 0.5,
@@ -409,11 +458,21 @@ game.scene.test = function ()
 			game.create.sprite
 			({
 				h: 50,
-				i: game.get.r ([ game.i.grass, game.i.grass2 ]),
+				i: game.get.r ([ game.i.grass, game.i.grass2, game.i.stone ]),
 				w: 50,
 				x: 400 + j * 50,
 				y: 100 + i * 50
 			}).load ();
 		}
 	}
+
+	game.create.unit
+	({
+		h: 0.1,
+		i: { head: game.i.head },
+		manage: 'mouse',
+		wk: 1,
+		x: 0.5,
+		y: 0.5
+	}).load ();
 }

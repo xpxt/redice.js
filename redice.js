@@ -119,6 +119,28 @@ var game =
 			return o;
 		},
 
+		button: function (_)
+		{
+			let o = game.create.sprite (_);
+				o.i0 = _.i0 || _.i;
+				o.i1 = _.i1 || _.i;
+
+				o.active = function (e)
+				{
+					if (game.get.pinbox ({ x: e.x, y: e.y },  o))
+					{
+						console.log ('in');
+					}
+				}
+
+				o.mousemove = function (e)
+				{
+					o.active (e);
+				}
+
+			return o;
+		},
+
 		object: function (_)
 		{
 			let o = _ || {};
@@ -153,10 +175,8 @@ var game =
 				o.vx = _.vx || o.x;
 				o.vy = _.vy || o.y;
 
-				o.draw = function ()
-				{
-					let hwxy = game.get.hwxy (o);
-					game.canvas.context.drawImage (o.i.head, hwxy.x, hwxy.y, hwxy.w, hwxy.h);
+				o.draw = function () {
+
 				}
 
 				o.mousedown = function (e)
@@ -220,7 +240,7 @@ var game =
 					if (game.get.Y (layer[j]) > game.get.Y (layer[j + 1]))
 					{
 						let temp = layer[j];
-						layer[j] = layer[j + 1]; 
+						layer[j] = layer[j + 1];
 						layer[j + 1] = temp;
 						swaped = true;
 					}
@@ -316,6 +336,14 @@ var game =
 			return (r < R);
 		},
 
+		pinbox: function (A, B)
+		{
+			let x = game.get.x (A);
+			let y = game.get.y (A);
+			let b = game.get.hwxy (B);
+			return ((x >= b.x) && (x <= b.x + b.w) && (y >= b.y) && (y <= b.y + b.h));
+		},
+
 		r: function (a, b, c)
 		{
 			let r = Math.random ();
@@ -384,7 +412,6 @@ var game =
 		game.canvas.load ();
 		game.event.load ();
 		game.scene.load ();
-
 		game.draw ();
 	},
 
@@ -474,5 +501,15 @@ game.scene.test = function ()
 		wk: 1,
 		x: 0.5,
 		y: 0.5
+	}).load ();
+
+	game.create.button
+	({
+		h: 0.1,
+		i: game.i.head,
+		wk: 1,
+		x: 0.5,
+		y: 0.5,
+		z: 1
 	}).load ();
 }

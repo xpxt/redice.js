@@ -457,15 +457,56 @@ var game =
 
 	tick: 50,
 
-	time: 0
+	time: 0,
+
+	wipe: function ()
+	{
+		game.object = {};
+		game.canvas.clear ();
+	}
 }
 
 game.get.i = [ 'body', 'grass', 'grass2', 'head', 'head2', 'head3', 'stone' ];
 
 window.onload = game.run;
 
+game.scene.start = function ()
+{
+	game.wipe ();
+
+	game.create.box
+	({
+		color: '#f00',
+		h: 0.15,
+		wk: 1,
+		x: 0.6, xk: 0.5,
+		y: 0.6, yk: 0.5,
+		z: 1
+	}).load ();
+
+	game.create.button
+	({
+		a: function ()
+		{
+			game.scene.test ();
+		},
+		h: 0.1,
+		ia: game.i.head3,
+		i: game.i.head,
+		iin: game.i.head2,
+		wk: 1,
+		x: 0.3,
+		y: 0.3,
+		z: 1
+	}).load ();
+
+	game.draw ();
+}
+
 game.scene.test = function ()
 {
+	game.wipe ();
+
 	game.create.box
 	({
 		h: 0.1,
@@ -543,6 +584,10 @@ game.scene.test = function ()
 
 	game.create.button
 	({
+		a: function ()
+		{
+			game.scene.start ();
+		},
 		h: 0.1,
 		ia: game.i.head3,
 		i: game.i.head,
@@ -552,4 +597,6 @@ game.scene.test = function ()
 		y: 0.5,
 		z: 1
 	}).load ();
+
+	game.draw ();
 }

@@ -122,14 +122,34 @@ var game =
 		button: function (_)
 		{
 			let o = game.create.sprite (_);
+				o.a = _.a || function () {};
 				o.i0 = _.i0 || _.i;
 				o.i1 = _.i1 || _.i;
+				o.in = _.in || function () {};
+				o.mousein = false;
+				o.out = _.out || function () {};
 
 				o.active = function (e)
 				{
-					if (game.get.pinbox ({ x: e.x, y: e.y },  o))
+					if (!o.mousein)
 					{
-						console.log ('in');
+						if (game.get.pinbox ({ x: e.x, y: e.y },  o))
+						{
+							o.mousein = true;
+							o.i = o.i1;
+							o.draw ();
+							o.zen (o);
+							o.in ();
+						}
+					} else {
+						if (!game.get.pinbox ({ x: e.x, y: e.y },  o))
+						{
+							o.mousein = false;
+							o.i = o.i0;
+							o.draw ();
+							o.zen (o);
+							o.out ();
+						}
 					}
 				}
 
@@ -422,7 +442,7 @@ var game =
 	time: 0
 }
 
-game.get.i = [ 'body', 'grass', 'grass2', 'head', 'stone' ];
+game.get.i = [ 'body', 'grass', 'grass2', 'head', 'head2', 'stone' ];
 
 window.onload = game.run;
 
@@ -507,9 +527,10 @@ game.scene.test = function ()
 	({
 		h: 0.1,
 		i: game.i.head,
+		i1: game.i.head2,
 		wk: 1,
 		x: 0.5,
 		y: 0.5,
-		z: 1
+		z: 2
 	}).load ();
 }

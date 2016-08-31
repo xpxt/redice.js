@@ -123,8 +123,9 @@ var game =
 		{
 			let o = game.create.sprite (_);
 				o.a = _.a || function () {};
-				o.i0 = _.i0 || _.i;
-				o.i1 = _.i1 || _.i;
+				o.ia = _.ia || _.i;
+				o.iin = _.iin || _.i;
+				o.iout = _.iout || _.i;
 				o.in = _.in || function () {};
 				o.mousein = false;
 				o.out = _.out || function () {};
@@ -136,7 +137,7 @@ var game =
 						if (game.get.pinbox ({ x: e.x, y: e.y },  o))
 						{
 							o.mousein = true;
-							o.i = o.i1;
+							o.i = o.iin;
 							o.draw ();
 							o.zen (o);
 							o.in ();
@@ -145,12 +146,29 @@ var game =
 						if (!game.get.pinbox ({ x: e.x, y: e.y },  o))
 						{
 							o.mousein = false;
-							o.i = o.i0;
+							o.i = o.iout;
 							o.draw ();
 							o.zen (o);
 							o.out ();
 						}
 					}
+				}
+
+				o.mousedown = function (e)
+				{
+					if (game.get.pinbox ({ x: e.x, y: e.y },  o))
+					{
+						o.i = o.ia;
+						o.draw ();
+						o.zen (o);
+						o.a ();
+					}
+				}
+
+				o.mouseup = function (e)
+				{
+					o.mousein = false;
+					o.active (e);
 				}
 
 				o.mousemove = function (e)
@@ -442,7 +460,7 @@ var game =
 	time: 0
 }
 
-game.get.i = [ 'body', 'grass', 'grass2', 'head', 'head2', 'stone' ];
+game.get.i = [ 'body', 'grass', 'grass2', 'head', 'head2', 'head3', 'stone' ];
 
 window.onload = game.run;
 
@@ -526,11 +544,12 @@ game.scene.test = function ()
 	game.create.button
 	({
 		h: 0.1,
+		ia: game.i.head3,
 		i: game.i.head,
-		i1: game.i.head2,
+		iin: game.i.head2,
 		wk: 1,
 		x: 0.5,
 		y: 0.5,
-		z: 2
+		z: 1
 	}).load ();
 }

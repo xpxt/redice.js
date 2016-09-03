@@ -229,7 +229,7 @@ var game =
 
 				o.walk = function ()
 				{
-					if (o.vr >= o.speed)
+					if (o.vr > o.speed)
 					{
 						let dot = game.get.rab (o.x, o.y, o.vx, o.vy, o.speed);
 						o.x = dot.x;
@@ -580,7 +580,9 @@ game.scene.test = function ()
 		manage: 'mouse',
 		wk: 1,
 		x: 0.3,
+		xk: 0.5,
 		y: 0.5,
+		yk: 0.5,
 		z: 1
 	}).load ();
 

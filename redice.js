@@ -75,6 +75,12 @@ var game =
 					o.zen (o);
 				}
 
+				o.redraw = function ()
+				{
+					o.draw ();
+					o.zen (o);
+				}
+
 				o.zen = function (O)
 				{
 					for (let id in game.object)
@@ -138,8 +144,7 @@ var game =
 						{
 							o.mousein = true;
 							o.i = o.iin;
-							o.draw ();
-							o.zen (o);
+							o.redraw ();
 							o.in ();
 						}
 					} else {
@@ -147,8 +152,7 @@ var game =
 						{
 							o.mousein = false;
 							o.i = o.iout;
-							o.draw ();
-							o.zen (o);
+							o.redraw ();
 							o.out ();
 						}
 					}
@@ -204,7 +208,7 @@ var game =
 
 		unit: function (_)
 		{
-			let o = game.create.object (_);
+			let o = game.create.sprite (_);
 				o.hp = _.hp || 1;
 				o.i = _.i;
 				o.manage = _.manage || '';
@@ -212,10 +216,6 @@ var game =
 				o.time = { walk: 0 };
 				o.vx = _.vx || o.x;
 				o.vy = _.vy || o.y;
-
-				o.draw = function () {
-
-				}
 
 				o.mousedown = function (e)
 				{
@@ -227,15 +227,15 @@ var game =
 					o.walk ();
 				}
 
-
 				o.walk = function ()
 				{
-					if (o.vr >= o.speed + 0.01)
+					if (o.vr >= o.speed)
 					{
 						let dot = game.get.rab (o.x, o.y, o.vx, o.vy, o.speed);
 						o.x = dot.x;
 						o.y = dot.y;
-						o.draw ();
+						o.move (o.x, o.y);
+						o.vr = game.get.ab (o.x, o.y, o.vx, o.vy);
 					}
 				}
 
@@ -405,12 +405,13 @@ var game =
 			return r;
 		},
 
-		rab: function (x0, y0, x1, y1, r)
+		rab: function (x0, y0, x1, y1, r0)
 		{
-			let tan = Math.tan ((y1 - y0) / (x1 - x0));
-			let angle = Math.atan (tan);
-			let x = x0 + r * Math.cos (angle);
-			let y = y0 + r * Math.sin (angle);
+			let r = game.get.ab (x0, y0, x1, y1);
+			let r1 = r - r0;
+			let k = r0 / r1;
+			let x = (x0 + k * x1) / (1 + k);
+			let y = (y0 + k * y1) / (1 + k);
 			return { x: x, y: y };
 		},
 
@@ -575,11 +576,12 @@ game.scene.test = function ()
 	game.create.unit
 	({
 		h: 0.1,
-		i: { head: game.i.head },
+		i: game.i.head,
 		manage: 'mouse',
 		wk: 1,
-		x: 0.5,
-		y: 0.5
+		x: 0.3,
+		y: 0.5,
+		z: 1
 	}).load ();
 
 	game.create.button

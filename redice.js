@@ -145,6 +145,7 @@ var game =
 							o.mousein = true;
 							o.i = o.iin;
 							o.redraw ();
+							window.document.body.style.cursor = 'pointer';
 							o.in ();
 						}
 					} else {
@@ -153,6 +154,7 @@ var game =
 							o.mousein = false;
 							o.i = o.iout;
 							o.redraw ();
+							window.document.body.style.cursor = 'default';
 							o.out ();
 						}
 					}
@@ -212,7 +214,7 @@ var game =
 				o.hp = _.hp || 1;
 				o.i = _.i;
 				o.manage = _.manage || '';
-				o.speed = _.speed || 0.01;
+				o.speed = _.speed || 10;
 				o.time = { walk: 0 };
 				o.vx = _.vx || o.x;
 				o.vy = _.vy || o.y;
@@ -231,11 +233,11 @@ var game =
 				{
 					if (o.vr > o.speed)
 					{
-						let dot = game.get.rab (o.x, o.y, o.vx, o.vy, o.speed);
-						o.x = dot.x;
-						o.y = dot.y;
+						let dot = game.get.rab (o.x * game.canvas.width, o.y * game.canvas.height, o.vx * game.canvas.width, o.vy * game.canvas.height, o.speed);
+						o.x = dot.x / game.canvas.width;
+						o.y = dot.y / game.canvas.height;
 						o.move (o.x, o.y);
-						o.vr = game.get.ab (o.x, o.y, o.vx, o.vy);
+						o.vr = game.get.ab (o.x * game.canvas.width, o.y * game.canvas.height, o.vx * game.canvas.width, o.vy * game.canvas.height);
 					}
 				}
 
@@ -245,7 +247,7 @@ var game =
 					{
 						o.vx = e.x / game.canvas.width;
 						o.vy = e.y / game.canvas.height;
-						o.vr = game.get.ab (o.x, o.y, o.vx, o.vy);
+						o.vr = game.get.ab (o.x * game.canvas.width, o.y * game.canvas.height, o.vx * game.canvas.width, o.vy * game.canvas.height);
 					}
 				}
 
@@ -370,7 +372,7 @@ var game =
 			let a = game.get.hwxy (A);
 			let b = game.get.hwxy (B);
 			let r = Math.sqrt (Math.pow (a.x - b.x, 2) + Math.pow (a.y - b.y, 2));
-			let R = (a.h + a.w) / 1.3;
+			let R = (a.h + a.w) / 1.5;
 			return (r < R);
 		},
 
@@ -429,6 +431,11 @@ var game =
 			return x;
 		},
 
+		X: function (o)
+		{
+			return game.get.x (o) + game.get.w (o);
+		},
+
 		y: function (o)
 		{
 			let y = (o.y > 1) ? o.y : o.y * game.canvas.height;
@@ -464,6 +471,7 @@ var game =
 	{
 		game.object = {};
 		game.canvas.clear ();
+		window.document.body.style.cursor = 'default';
 	}
 }
 
@@ -582,7 +590,7 @@ game.scene.test = function ()
 		x: 0.3,
 		xk: 0.5,
 		y: 0.5,
-		yk: 0.5,
+		yk: 1,
 		z: 1
 	}).load ();
 

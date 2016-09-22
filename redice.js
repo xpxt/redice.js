@@ -33,6 +33,34 @@ var game =
 
 	create:
 	{
+		a: function (_)
+		{
+			let o = game.create.sprite (_);
+				o.delay = _.delay || game.tick;
+				o.frame = _.frame || [ o.i ];
+				o.step = _.step || 0;
+				o.time = game.time;
+
+				o.next = function ()
+				{
+					if (game.time - o.time >= o.delay)
+					{
+						o.time = game.time;
+						o.step++;
+						o.step = (o.step + 1 > o.frame.length) ? 0 : o.step;
+						o.i = o.frame[o.step];
+						o.draw ();
+					}
+				}
+
+				o.tick = function ()
+				{
+					o.next ();
+				}
+
+			return o;
+		},
+
 		box: function (_)
 		{
 			let o = game.create.object (_);
@@ -185,6 +213,22 @@ var game =
 			return o;
 		},
 
+		element: function (_)
+		{
+			let o = game.create.button (_);
+				o.name = _.name || 'Element';
+				o.number = _.number || 0;
+				o.shortname = _.shortname || 'El';
+				o.type = _.type || 'metal';
+
+				o.draw = function ()
+				{
+					game.canvas.context.fillText = (o.shortname, o.x, o.y);
+				}
+
+			return o;
+		},
+
 		object: function (_)
 		{
 			let o = _ || {};
@@ -214,7 +258,7 @@ var game =
 				o.hp = _.hp || 1;
 				o.i = _.i;
 				o.manage = _.manage || '';
-				o.speed = _.speed || 10;
+				o.speed = _.speed || 5;
 				o.time = { walk: 0 };
 				o.vx = _.vx || o.x;
 				o.vy = _.vy || o.y;
@@ -586,6 +630,7 @@ game.scene.test = function ()
 		h: 0.1,
 		i: game.i.head,
 		manage: 'mouse',
+		speed: 5,
 		wk: 1,
 		x: 0.3,
 		xk: 0.5,
@@ -607,6 +652,20 @@ game.scene.test = function ()
 		wk: 1,
 		x: 0.5,
 		y: 0.5,
+		z: 1
+	}).load ();
+
+	game.create.a
+	({
+		delay: 500,
+		frame: [game.i.head, game.i.head2, game.i.head3],
+		h: 0.1,
+		i: game.i.head,
+		wk: 1,
+		x: 0.7,
+		xk: 0.5,
+		y: 0.3,
+		yk: 1,
 		z: 1
 	}).load ();
 

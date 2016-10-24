@@ -241,12 +241,13 @@ var game =
 		sprite: function (_)
 		{
 			let o = game.create.box (_);
+				o.aoff = (_.aoff) ? false : true;
 				o.i = _.i;
 
 				o.draw = function ()
 				{
 					let hwxy = game.get.hwxy (o);
-					game.canvas.context.imageSmoothingEnabled = false;
+					game.canvas.context.imageSmoothingEnabled = o.aoff;
 					game.canvas.context.drawImage (o.i, hwxy.x, hwxy.y, hwxy.w, hwxy.h);
 				}
 
@@ -256,6 +257,9 @@ var game =
 		unit: function (_)
 		{
 			let o = game.create.sprite (_);
+				o.a = _.a || {};
+				o.a.wait = _.a.wait || function () {};
+				o.animation = 'wait';
 				o.hp = _.hp || 1;
 				o.i = _.i;
 				o.manage = _.manage || '';
@@ -263,6 +267,11 @@ var game =
 				o.time = { walk: 0 };
 				o.vx = _.vx || o.x;
 				o.vy = _.vy || o.y;
+
+				o.animate = function ()
+				{
+					if (o.a[o.animation]) o.a[o.animation] ().load;
+				}
 
 				o.mousedown = function (e)
 				{
@@ -272,6 +281,7 @@ var game =
 				o.tick = function ()
 				{
 					o.walk ();
+					o.animate ();
 				}
 
 				o.walk = function ()
@@ -283,6 +293,9 @@ var game =
 						o.y = dot.y / game.canvas.height;
 						o.move (o.x, o.y);
 						o.vr = game.get.ab (o.x * game.canvas.width, o.y * game.canvas.height, o.vx * game.canvas.width, o.vy * game.canvas.height);
+						o.animation = 'walk';
+					} else {
+						o.animation = 'wait';
 					}
 				}
 
@@ -387,10 +400,10 @@ var game =
 		hwxy: function (o)
 		{
 			let hwxy = {};
-				hwxy.h = game.get.h (o);
-				hwxy.w = game.get.w (o);
-				hwxy.x = game.get.x (o);
-				hwxy.y = game.get.y (o);
+				hwxy.h = game.get.h (o) >> 0;
+				hwxy.w = game.get.w (o) >> 0;
+				hwxy.x = game.get.x (o) >> 0;
+				hwxy.y = game.get.y (o) >> 0;
 			return hwxy;
 		},
 
@@ -506,7 +519,7 @@ var game =
 		game.draw ();
 	},
 
-	scene: { load: function () { game.scene.test (); } },
+	scene: { load: function () { game.scene.start (); } },
 
 	tick: 50,
 
@@ -520,7 +533,7 @@ var game =
 	}
 }
 
-game.get.i = [ 'body', 'grass', 'grass2', 'head', 'head2', 'head3', 'play', 'setred', 'start', 'start2', 'stone' ];
+game.get.i = [ 'body', 'cloud', 'grass', 'grass2', 'head', 'head2', 'head3', 'play', 'setred', 'start', 'start2', 'stone' ];
 
 window.onload = game.run;
 
@@ -530,6 +543,7 @@ game.scene.start = function ()
 
 	game.create.sprite
 	({
+		aoff: true,
 		h: 0.075,
 		i: game.i.setred,
 		wk: 1,
@@ -544,22 +558,7 @@ game.scene.start = function ()
 		{
 			game.scene.test ();
 		},
-		h: 0.1,
-		ia: game.i.head3,
-		i: game.i.head,
-		iin: game.i.head2,
-		wk: 1,
-		x: 0.3,
-		y: 0.3,
-		z: 1
-	}).load ();
-
-	game.create.button
-	({
-		a: function ()
-		{
-			game.scene.test ();
-		},
+		aoff: true,
 		h: 0.1,
 		ia: game.i.play,
 		i: game.i.play,
@@ -647,7 +646,7 @@ game.scene.test = function ()
 	game.create.unit
 	({
 		h: 0.1,
-		i: game.i.head,
+		i: game.i.cloud,
 		manage: 'mouse',
 		speed: 5,
 		wk: 1,
